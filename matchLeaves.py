@@ -14,8 +14,29 @@ import pickle
 import numpy as np
 import scipy as sp, scipy.spatial
 
+
 def matchLeaf(probe, gallery):
-    return 'Chinese horse chestnut'
+    bestMatch = None
+    bestMatchDist = np.inf
+    dist = sp.spatial.distance.euclidean
+
+    for (name, descriptor) in gallery:
+        dists = []
+
+        # For all pairs of probe and gallery subdescriptors
+        for pDesc in probe:
+            minDist = min([dist(pDesc.flat, gDesc.flat) for gDesc in descriptor])
+            dists.append(minDist)
+        
+        dists.sort()
+        avgDist = sum(dists[:10])/10.0
+        
+        if avgDist < bestMatchDist:
+            bestMatch = name
+            bestMatchDist = avgDist
+    
+    return bestMatch
+
 
 def main():
 
@@ -26,6 +47,7 @@ def main():
 
     galleryDir = sys.argv[1]
     probeDir = sys.argv[2]
+    fileName = lambda name : '.'.join(name.split('.')[:-1])
 
     # Read all the gallery descriptors into a list
     gallery = []
@@ -34,17 +56,16 @@ def main():
         if galFile == 'index.csv': continue
 
         galPath = galleryDir + '/' + galFile
-        gallery.append(pickle.load(open(galPath, 'r')))
+        gallery.append((fileName(galFile), pickle.load(open(galPath, 'r'))))
 
     # Find the best match for each probe
-    fileName = lambda name : '.'.join(name.split('.')[:-1])
     matches = {}
 
     for probeFile in os.listdir(probeDir): 
         probePath = probeDir + '/' + probeFile
         probe = pickle.load(open(probePath, 'r'))
-        matchingSpecies = matchLeaf(probe, gallery)
-        matches[int(fileName(probeFile))] = matchingSpecies
+        galMatch = matchLeaf(probe, gallery)
+        matches[int(fileName(probeFile))] = int(galMatch)
 
     print pickle.dumps(matches)
 

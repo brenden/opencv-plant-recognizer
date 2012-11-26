@@ -4,10 +4,10 @@ MATCH = ../matchLeaves.py
 GRADE = ../gradeMatch.py
 
 # Intermediate result locations
-PROBE_DATASET = datasets/flavia-mini-probes
-GALLERY_DATASET = datasets/flavia-mini
-PROBE_DESCRIPTORS = descriptors/flavia-mini-probes
-GALLERY_DESCRIPTORS = descriptors/flavia-mini
+PROBE_DATASET = datasets/flavia-mini-mini-probes
+GALLERY_DATASET = datasets/flavia-mini-mini
+PROBE_DESCRIPTORS = descriptors/flavia-mini-mini-probes
+GALLERY_DESCRIPTORS = descriptors/flavia-mini-mini
 MATCHES = matches.p
 METRICS = metrics.p
 
@@ -22,7 +22,7 @@ t-flavia-dataset:
 	@echo "TODO"
 	touch t-flavia-dataset
 
-t-gis-descriptors: t-gis-dataset	
+t-gis-descriptors: t-gis-dataset
 	mkdir -p $(PROBE_DESCRIPTORS)
 	$(DESCRIBE) $(PROBE_DATASET) $(PROBE_DESCRIPTORS)
 	touch t-gis-descriptors

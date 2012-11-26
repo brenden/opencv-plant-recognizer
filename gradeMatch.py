@@ -38,10 +38,14 @@ def main():
 
     # Calculate performance metrics
     matchInfo = {}
-    matches = [matches[k] == key[k] for k in matches]
-    matchInfo['accuracy'] = 1.0 * sum(matches) / len(matches)
+    correct = 0
 
-    print matchInfo#pickle.dumps(matchInfo)
+    for (probe, galMatch) in matches.items():
+        print '%d (%s) <=> %d (%s)' % (probe, key[probe], galMatch, key[galMatch])
+        if key[probe] == key[galMatch]: correct += 1
+
+    accuracy = 1.0 * correct / len(matches)
+    print 'accuracy:', accuracy
 
 if __name__ == '__main__':
     main()
