@@ -25,6 +25,19 @@ def parseKeyCSV(keyCSV):
 
     return key
 
+def computeConfusionMatrix(matches, key):
+    consideredSpecies = list(set(
+        [key[m] for m in matches.keys()] + 
+        [key[m] for m in matches.values()]))
+    confusionMatrix = np.zeros((len(consideredSpecies), len(consideredSpecies)))
+
+    for (probe, galMatch) in matches.items():
+        confusionMatrix[
+            consideredSpecies.index(key[probe]), 
+            consideredSpecies.index(key[galMatch])] += 1
+    
+    return (consideredSpecies, confusionMatrix)
+
 def main():
 
     # Check for proper arguments
@@ -43,6 +56,10 @@ def main():
     for (probe, galMatch) in matches.items():
         print '%d (%s) <=> %d (%s)' % (probe, key[probe], galMatch, key[galMatch])
         if key[probe] == key[galMatch]: correct += 1
+
+    (consideredSpecies, confusionMatrix) = computeConfusionMatrix(matches, key)
+    print consideredSpecies
+    print confusionMatrix
 
     accuracy = 1.0 * correct / len(matches)
     print 'accuracy:', accuracy

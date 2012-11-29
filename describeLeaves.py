@@ -18,6 +18,7 @@ random.seed(0)
 
 
 def segmentLeaf(leafImage):
+    print '   segmenting leaf'
     (rows, cols, depth) = leafImage.shape
     linearImage = np.reshape(leafImage, (rows*cols, depth)).astype('float32')
 
@@ -46,6 +47,7 @@ def segmentLeaf(leafImage):
 
 
 def sampleEdgePoints(ignoreMap):
+    print '   sampling edge points'
     edgeMap = cv2.Canny(ignoreMap, 1, 1)
     edgeList = []
     edgeTrace = []
@@ -53,7 +55,7 @@ def sampleEdgePoints(ignoreMap):
     # Create a list of some edge points (just a few will suffice)
     for r in range(len(edgeMap)):
         for c in range(len(edgeMap[r])):
-            if edgeMap[r, c]!=0 and not random.randint(0, 10):
+            if edgeMap[r, c]!=0 and not random.randint(0, 20): # was 10
                 edgeList.append((0, c, r))
 
     lastPoint = edgeList.pop()[1:]
@@ -83,6 +85,7 @@ def sampleEdgePoints(ignoreMap):
 
 
 def buildEdgeGraph(edgeTrace, ignoreMap):
+    print '   building edge graph'
     edgeGraph = np.zeros((len(edgeTrace), len(edgeTrace)))
     dist = sp.spatial.distance.euclidean
 
@@ -90,7 +93,7 @@ def buildEdgeGraph(edgeTrace, ignoreMap):
         for j, (x1, y1) in enumerate(edgeTrace[i+1:]):
 
             # Check whether (x0, y0) to (x1, y1) is contained within the shape
-            for t in [x/100 for x in range(100)]:
+            for t in [x/10 for x in range(10)]:
                 xt = (1-t)*x0 + t*x1
                 yt = (1-t)*y0 + t*y1
 
@@ -110,6 +113,7 @@ def buildEdgeGraph(edgeTrace, ignoreMap):
 
 
 def innerDistanceShapeContext(edgeGraph, edgeTrace, ignoreMap):
+    print '   computing IDSC'
     histList = []
     dist = sp.spatial.distance.euclidean
     logMaxDistance = log(dist((0, 0), ignoreMap.shape), 2)
@@ -173,6 +177,8 @@ def main():
     for leafFile in os.listdir(leafDir): 
         if leafFile == 'index.csv': continue
         
+        print 'describing %s' % leafFile
+
         leafPath = leafDir + '/' + leafFile
         leafDescriptorPath = descriptorDir + '/' + fileName(leafFile) + '.p'
 
@@ -180,7 +186,7 @@ def main():
 
         # Write the pickled descriptor to the output file
         leafImage = cv2.imread(leafPath)
-        leafDescriptor = describeLeaf(leafImage)
+        leafDescriptor = describeLeaf(leafImage) 
         pickle.dump(leafDescriptor, open(leafDescriptorPath, 'wb'))
 
 if __name__ == '__main__':

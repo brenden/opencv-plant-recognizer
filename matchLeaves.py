@@ -21,6 +21,7 @@ def matchLeaf(probe, gallery):
     dist = sp.spatial.distance.euclidean
 
     for (name, descriptor) in gallery:
+        sys.stderr.write('   %s\n' % name)
         dists = []
 
         # For all pairs of probe and gallery subdescriptors
@@ -62,6 +63,7 @@ def main():
     matches = {}
 
     for probeFile in os.listdir(probeDir): 
+        sys.stderr.write('matching %s\n' % probeFile)
         probePath = probeDir + '/' + probeFile
         probe = pickle.load(open(probePath, 'r'))
         galMatch = matchLeaf(probe, gallery)
